@@ -40,8 +40,6 @@ class TasksDao(val db: Database = Database.connect("jdbc:h2:mem:test;DB_CLOSE_DE
         }
     }
 
-
-
     fun init() {
         db.transaction {
             create(Tasks)

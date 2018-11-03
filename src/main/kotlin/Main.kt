@@ -1,3 +1,4 @@
+
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
@@ -9,24 +10,24 @@ import io.ktor.locations.Location
 import io.ktor.locations.Locations
 import io.ktor.locations.get
 import io.ktor.response.respond
-import io.ktor.response.respondText
 import io.ktor.routing.Routing
-import io.ktor.routing.get
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import models.ProjectsDao
 import models.TasksDao
-
 
 fun main(args: Array<String>) {
     embeddedServer(Netty, port = 8080, module = Application::mainModule).start(wait = true)
 }
 
 val tasksDao = TasksDao()
+val projectsDao = ProjectsDao()
 
 fun Application.mainModule() {
 
     tasksDao.init()
+    projectsDao.init()
 
     install(ContentNegotiation) { jackson() }
     install(StatusPages)
@@ -58,8 +59,12 @@ fun Routing.taskRoutes() {
 }
 
 fun Routing.projectRoutes() {
-    get("/projects") {
-        call.respondText("All Projects")
+    @Location("projects/{id}")
+    data class GetProject(val id: Int)
+
+    get<GetProject> {
+        val project = projectsDao.findById(it.id)
+        call.respond(project)
     }
 
 }
