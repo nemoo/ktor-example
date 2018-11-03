@@ -15,38 +15,44 @@ import io.ktor.routing.get
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
-import models.TaskRepo
+import models.TasksDao
 
 
 fun main(args: Array<String>) {
     embeddedServer(Netty, port = 8080, module = Application::mainModule).start(wait = true)
 }
 
-fun Application.mainModule() {
-    routing {
-        install(ContentNegotiation) { jackson() }
-        install(StatusPages)
-        install(CallLogging)
-        install(Locations)
+val tasksDao = TasksDao()
 
+fun Application.mainModule() {
+
+    tasksDao.init()
+
+    install(ContentNegotiation) { jackson() }
+    install(StatusPages)
+    install(CallLogging)
+    install(Locations)
+
+    routing {
         taskRoutes()
         projectRoutes()
     }
 }
 
 fun Routing.taskRoutes() {
-    get("/tasks") {
-        val taskRepo = models.TaskRepo()
-        val list = taskRepo.all()
+    @Location("/tasks")
+    class GetTasks
+
+    get<GetTasks> {
+        val list = tasksDao.all()
         call.respond(list)
     }
 
     @Location("/tasks/{id}")
-    data class GetTasks(val id: Long)
-    get<GetTasks> {
-        val id: Long = it.id
-        val taskRepo = models.TaskRepo()
-        val task = taskRepo.findById(id)!!
+    data class GetTask(val id: Int)
+
+    get<GetTask> {
+        val task = tasksDao.findById(it.id)
         call.respond(task)
     }
 }

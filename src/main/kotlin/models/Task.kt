@@ -1,25 +1,52 @@
 package models
 
-data class Task(val id: Long,
+import org.jetbrains.exposed.sql.*
+
+data class Task(val id: Int,
                 val color: String,
                 val status: TaskStatus,
-                val project: Long)
+                val project: Int)
 
+
+object Tasks : Table() {
+    val id = integer("id").autoIncrement().primaryKey()
+    val color = varchar("color", 256)
+    val status = varchar("status", 256)
+    val project = integer("project")
+}
 
 enum class TaskStatus {ready,set,go}
 
-fun createTask() = Task(1,"blue", TaskStatus.ready,3)
 
-class TaskRepo(){
-    val tasks = listOf<Task>(
-            Task(1,"blue", TaskStatus.ready,3)
-            ,Task(2,"green", TaskStatus.set,5)
-    )
-    fun findById(id: Long): Task? = tasks.find { it.id == id }
+class TasksDao(val db: Database = Database.connect("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", driver = "org.h2.Driver")) {
+    fun createTask(task: Task) = db.transaction {
+         Tasks.insert {
+            it[id] = task.id
+            it[color] = task.color
+            it[status] = task.status.toString()
+            it[project] = task.project
+        } get Tasks.id
+    }
 
-    fun findByColor(color: String): Task? = tasks.find { it.color == color }
+    fun findById(id: Int): Task = db.transaction {
+        val row = Tasks.select { Tasks.id.eq(id) }.single()
+        Task(id, row[Tasks.color], TaskStatus.valueOf(row[Tasks.status]), row[Tasks.project])
+    }
 
-    fun findByProjectId(projectId: Long): List<Task> = tasks.filter { it.project == projectId }
+    fun all() = db.transaction {
+        val results = Tasks.selectAll().toList()
+        results.map {
+            Task(it[Tasks.id], it[Tasks.color], TaskStatus.valueOf(it[Tasks.status]), it[Tasks.project])
+        }
+    }
 
-    fun all() = tasks
+
+
+    fun init() {
+        db.transaction {
+            create(Tasks)
+            createTask(Task(1,"fuchsia",TaskStatus.go,3))
+            createTask(Task(2,"black",TaskStatus.set,3))
+        }
+    }
 }
