@@ -9,7 +9,7 @@ object Projects : Table() {
     val name = varchar("color", 256)
 }
 
-class ProjectsDao(val db: Database = Database.connect("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", driver = "org.h2.Driver")) {
+class ProjectsDao(val db: Database) {
     fun createProject(project: Project) = db.transaction {
         Projects.insert {
             it[id] = project.id

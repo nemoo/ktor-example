@@ -18,7 +18,7 @@ object Tasks : Table() {
 enum class TaskStatus {ready,set,go}
 
 
-class TasksDao(val db: Database = Database.connect("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", driver = "org.h2.Driver")) {
+class TasksDao(val db: Database) {
     fun createTask(task: Task) = db.transaction {
          Tasks.insert {
             it[id] = task.id
