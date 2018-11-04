@@ -25,9 +25,9 @@ fun Application.mainModule() {
 
     val db: Database = Database.connect("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", driver = "org.h2.Driver")
 
-    val tasksDao = TasksDao()
-    val projectsDao = ProjectsDao(tasksDao)
-    val testData = TestData(projectsDao)
+    val tasksDao = TasksDao(db)
+    val projectsDao = ProjectsDao(db, tasksDao)
+    val testData = TestData(db, projectsDao)
 
     testData.init()
 

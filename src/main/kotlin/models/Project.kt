@@ -16,27 +16,27 @@ private fun fromRow(row: ResultRow) =
                 row[Projects.name]
         )
 
-class ProjectsDao(private val tasksDao: TasksDao) {
+class ProjectsDao(private val db: Database, private val tasksDao: TasksDao) {
 
-    fun create(name: String): Int = transaction {
+    fun create(name: String): Int = transaction(db) {
         Projects.insertAndGetId {
             it[Projects.name] = name
         }.value
     }
 
-    fun findById(id: Int): Project = transaction {
+    fun findById(id: Int): Project = transaction(db) {
         val row = Projects.select { Projects.id.eq(id) }.single()
         fromRow(row)
     }
 
-    fun all() = transaction {
+    fun all() = transaction(db) {
         val results = Projects.selectAll().toList()
         results.map {
             fromRow(it)
         }
     }
 
-    fun addTask(color: String, projectId: Int) = transaction {
+    fun addTask(color: String, projectId: Int) = transaction(db) {
         val project = findById(projectId)
         tasksDao.insert(Task(0, color, TaskStatus.ready, project.id))
     }

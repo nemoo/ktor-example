@@ -26,8 +26,8 @@ private fun fromRow(row: ResultRow) =
 
 enum class TaskStatus {ready,set,go}
 
-class TasksDao {
-    fun insert(task: Task): Int = transaction {
+class TasksDao(private val db: Database) {
+    fun insert(task: Task): Int = transaction(db){
          Tasks.insertAndGetId {
             it[color] = task.color
             it[status] = task.status.toString()
@@ -35,12 +35,12 @@ class TasksDao {
         }.value
     }
 
-    fun findById(id: Int): Task = transaction {
+    fun findById(id: Int): Task = transaction(db) {
         val row = Tasks.select { Tasks.id.eq(id) }.single()
         fromRow(row)
     }
 
-    fun all() = transaction {
+    fun all() = transaction(db) {
         val results = Tasks.selectAll().toList()
         results.map {
             fromRow(it)
