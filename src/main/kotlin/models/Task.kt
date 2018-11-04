@@ -15,6 +15,14 @@ object Tasks : Table() {
     val project = integer("project")
 }
 
+private fun fromRow(row: ResultRow) =
+    Task(
+            row[Tasks.id],
+            row[Tasks.color],
+            TaskStatus.valueOf(row[Tasks.status]),
+            row[Tasks.project]
+    )
+
 enum class TaskStatus {ready,set,go}
 
 
@@ -30,13 +38,13 @@ class TasksDao(val db: Database) {
 
     fun findById(id: Int): Task = db.transaction {
         val row = Tasks.select { Tasks.id.eq(id) }.single()
-        Task(id, row[Tasks.color], TaskStatus.valueOf(row[Tasks.status]), row[Tasks.project])
+        fromRow(row)
     }
 
     fun all() = db.transaction {
         val results = Tasks.selectAll().toList()
         results.map {
-            Task(it[Tasks.id], it[Tasks.color], TaskStatus.valueOf(it[Tasks.status]), it[Tasks.project])
+            fromRow(it)
         }
     }
 

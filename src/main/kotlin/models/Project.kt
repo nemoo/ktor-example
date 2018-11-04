@@ -9,6 +9,12 @@ object Projects : Table() {
     val name = varchar("color", 256)
 }
 
+private fun fromRow(row: ResultRow) =
+        Project(
+                row[Projects.id],
+                row[Projects.name]
+        )
+
 class ProjectsDao(val db: Database) {
     fun createProject(project: Project) = db.transaction {
         Projects.insert {
@@ -19,13 +25,13 @@ class ProjectsDao(val db: Database) {
 
     fun findById(id: Int): Project = db.transaction {
         val row = Projects.select { Projects.id.eq(id) }.single()
-        Project(row[Projects.id], row[Projects.name])
+        fromRow(row)
     }
 
     fun all() = db.transaction {
         val results = Projects.selectAll().toList()
         results.map {
-            Project(it[Projects.id], it[Projects.name])
+            fromRow(it)
         }
     }
 
