@@ -1,11 +1,11 @@
 Kotlin Ktor Example 
 ==================
 
-An example web app using Kotlin and Ktor
+An example web app using [Kotlin](https://kotlinlang.org/) and [Ktor](https://ktor.io/)
   
 
 * This template shows you how you can structure your app.
-* It uses IntelliJ Exposed to interact with the database in a type safe way.
+* It uses [Jetbrains Exposed](https://github.com/JetBrains/Exposed) to interact with the database in a type safe way.
 * Easy to read and understand
 
 1. Install [JDK 8 or higher](https://openjdk.java.net/install/).
