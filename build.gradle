@@ -40,7 +40,7 @@ dependencies {
     compile "io.ktor:ktor-locations:$ktor_version"
     compile "com.h2database:h2:1.4.191"
     compile "com.mchange:c3p0:0.9.5.2"
-    compile("org.jetbrains.exposed:exposed:0.3.2") {
+    compile("org.jetbrains.exposed:exposed:0.11.2") {
         exclude(module: 'log4j')
         exclude(module: 'slf4j-log4j12')
         exclude(module: 'kotlin-stdlib')

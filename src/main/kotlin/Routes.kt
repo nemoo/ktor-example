@@ -1,4 +1,5 @@
 import io.ktor.application.call
+import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.Location
 import io.ktor.locations.get
 import io.ktor.response.respond
@@ -6,6 +7,7 @@ import io.ktor.routing.Routing
 import models.ProjectsDao
 import models.TasksDao
 
+@KtorExperimentalLocationsAPI
 fun Routing.taskRoutes(tasksDao: TasksDao) {
     @Location("/tasks")
     class GetTasks
@@ -24,6 +26,7 @@ fun Routing.taskRoutes(tasksDao: TasksDao) {
     }
 }
 
+@KtorExperimentalLocationsAPI
 fun Routing.projectRoutes(projectsDao: ProjectsDao) {
     @Location("projects/{id}")
     data class GetProject(val id: Int)
